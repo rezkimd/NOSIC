@@ -1,0 +1,121 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 200px; /* Sidebar width */
+  background-color: #3b3b3b; /* Dark background color */
+  color: #fff; /* White text color */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items horizontally */
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo span {
+  font-size: 32px; /* Ukuran font */
+  font-weight: bold; /* Menebalkan tulisan */
+  display: block; /* Membuat tulisan dalam satu blok */
+}
+
+.logo img {
+  width: 60px; /* Increase logo size */
+  height: 60px; /* Set logo height */
+  margin-bottom: 10px; /* Space between logo and text */
+}
+
+.nav {
+  list-style-type: none;
+  padding: 0;
+}
+
+.nav li {
+  margin: 15px 0;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #fff; /* White text color for links */
+  display: flex;
+  align-items: center; /* Align icon and text vertically */
+  transition: color 0.3s ease;
+}
+
+.nav .icon {
+  width: 30px; /* Set icon size */
+  height: 30px; /* Set icon height */
+  margin-right: 10px; /* Space between icon and text */
+}
+
+.nav a:hover {
+  color: #4caf50; /* Change hover color to green */
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #f2f2f2; /* Light grey background */
+}
+
+header {
+  background-color: #4caf50; /* Green header */
+  color: white; /* White text */
+  padding: 15px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+h1,
+h2 {
+  font-weight: normal;
+}
+
+section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #fff; /* White background for sections */
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
+}
+
+.dashboard-sections {
+  display: flex; /* Use flexbox layout */
+  flex-wrap: wrap; /* Allow wrapping to the next line */
+  justify-content: space-between; /* Space out items */
+  margin: 20px 0; /* Margin around the sections */
+}
+
+.dashboard-box {
+  background-color: #fff; /* White background for boxes */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Shadow effect for depth */
+  flex: 0 0 calc(48% - 10px); /* Set box width to 48% minus margin */
+  margin-bottom: 20px; /* Space below each box */
+  padding: 15px; /* Inner padding for boxes */
+}
+
+.dashboard-box h2 {
+  margin-top: 0; /* Remove margin from heading top */
+}
