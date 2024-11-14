@@ -1,0 +1,12 @@
+Flask
+scipy
+imutils
+numpy
+dlib
+opencv-python
+
+# create the virtual environment by write :
+# > python -m venv .env
+#
+# then download the dependencies with command :
+# > pip install -r requirements.txt
