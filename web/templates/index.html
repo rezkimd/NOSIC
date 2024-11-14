@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <title>NOSIC Dashboard</title>
 </head>
 <body>
@@ -14,14 +14,15 @@
         </div>
         <ul class="nav">
             <li><a href="#profile">
-                <img src="assets/profile.svg" alt="Profile" class="icon"> Profile</a>
+                <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="Profile" class="icon"> Profile</a>
             </li>
             <li><a href="#monitoring">
-                <img src="assets/chart.svg" alt="Monitoring" class="icon"> Monitoring</a>
+                <img src="{{ url_for('static', filename='assets/chart.svg') }}" alt="Monitoring" class="icon"> Monitoring</a>
             </li>
             <li><a href="#settings">
-                <img src="assets/settings.svg" alt="Settings" class="icon"> Settings</a>
+                <img src="{{ url_for('static', filename='assets/settings.svg') }}" alt="Settings" class="icon"> Settings</a>
             </li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
         </ul>
     </div>
 
