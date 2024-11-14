@@ -1,0 +1,74 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2; /* Latar belakang halaman */
+    display: flex;
+    align-items: center; /* Vertically center the container */
+    justify-content: center; /* Horizontally center the container */
+    height: 100vh; /* Full height of the viewport */
+}
+
+.login-container {
+    background-color: white; /* Warna latar belakang form login */
+    padding: 30px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Bayangan */
+    width: 300px; /* Lebar form */
+    text-align: center; /* Tengah teks */
+}
+
+.login-form h2 {
+    margin-bottom: 20px; /* Jarak bawah untuk heading */
+}
+
+.form-group {
+    margin-bottom: 15px; /* Jarak antar elemen form */
+}
+
+label {
+    display: block; /* Menampilkan label sesuai blok */
+    margin-bottom: 5px; /* Jarak bawah label */
+    color: #333; /* Warna teks label */
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%; /* Lebar penuh input */
+    padding: 10px; /* Ruang dalam input */
+    border: 1px solid #ccc; /* Batas abu-abu */
+    border-radius: 5px; /* Sudut tumpul */
+}
+
+button {
+    width: 100%; /* Lebar penuh tombol */
+    padding: 10px; /* Ruang dalam tombol */
+    background-color: #4caf50; /* Warna latar tombol */
+    color: white; /* Warna teks tombol */
+    border: none; /* Tanpa batas */
+    border-radius: 5px; /* Sudut tumpul */
+    cursor: pointer; /* Kursor menunjukkan tombol */
+    font-size: 16px; /* Ukuran font tombol */
+}
+
+button:hover {
+    background-color: #45a049; /* Warna tombol saat hover */
+}
+
+.signup {
+    margin-top: 15px; /* Jarak atas untuk teks signup */
+}
+
+.signup a {
+    color: #4caf50; /* Warna link signup */
+    text-decoration: none; /* Tanpa garis bawah */
+}
+
+.signup a:hover {
+    text-decoration: underline; /* Garis bawah saat hover */
+}
