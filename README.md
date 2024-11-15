@@ -28,9 +28,10 @@ EYE_AR_CONSEC_FRAMES = 30
 YAWN_THRESH = 10`	//change this according to the distance from the camera
 ```
 
-## Authors
+## Original Authors
 
-**Arijit Das**
+Rezki Muhammadn - rezkimd
+Muhammad Salman Sadad - salman82
 
 ## Acknowledgments
 
