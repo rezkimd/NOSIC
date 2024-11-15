@@ -1,0 +1,188 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh; /* Full height of the viewport */
+}
+
+.sidebar {
+    width: 200px;  /* Sidebar width */
+    background-color: #3b3b3b;  /* Dark background color */
+    color: #fff;  /* White text color */
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.logo {
+    text-align: center; 
+    margin-bottom: 30px; 
+}
+
+.logo span {
+    font-size: 32px;       
+    font-weight: bold;     
+    display: block; 
+}
+
+.logo img {
+    width: 60px;  
+    height: 60px;  
+    margin-bottom: 10px;  
+}
+
+.nav {
+    list-style-type: none; 
+    padding: 0; 
+}
+
+.nav li {
+    margin: 15px 0; 
+}
+
+.nav a {
+    text-decoration: none; 
+    color: #fff;  
+    display: flex;  
+    align-items: center;  
+    transition: color 0.3s ease; 
+}
+
+.nav .icon {
+    width: 30px;  
+    height: 30px;  
+    margin-right: 10px;  
+}
+
+.nav a:hover {
+    color: #4caf50;  
+}
+
+.main-content {
+    flex-grow: 1;  
+    padding: 20px; 
+    background-color: #f2f2f2;  
+}
+
+header {
+    background-color: #4caf50;  
+    color: white;  
+    padding: 15px; 
+    text-align: center;  
+    border-radius: 5px; 
+}
+
+.dashboard-sections {
+    display: flex;                     
+    flex-wrap: wrap;                  
+    justify-content: space-between;   
+    margin: 20px 0;                   
+}
+
+.dashboard-box {
+    background-color: #fff;           
+    border-radius: 5px;               
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+    flex: 0 0 calc(48% - 10px);       
+    margin-bottom: 20px;              
+    padding: 15px;                    
+}
+
+.dashboard-box h2 {
+    margin-top: 0;                     
+}
+
+h1, h2 {
+    font-weight: normal;               
+}
+
+section {
+    margin: 20px 0;                   
+    padding: 15px;                     
+    background-color: #fff;           
+    border-radius: 5px;               
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+/* CSS untuk Halaman Login dan Sign Up */
+.login-container {
+    display: flex; 
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    height: 100vh; /* Full height of the viewport */
+    background-color: #f2f2f2; /* Background color for the entire page */
+}
+
+.login-form {
+    background-color: white; /* Background color for form */
+    padding: 30px;
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    width: 300px; /* Width of form */
+    text-align: center; /* Center text */
+}
+
+.login-form h2 {
+    margin-bottom: 20px; /* Margin for heading */
+}
+
+.form-group {
+    margin-bottom: 15px; /* Margin between form elements */
+}
+
+label {
+    display: block; /* Block display for labels */
+    margin-bottom: 5px; /* Space below label */
+    color: #333; /* Color for label text */
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%; /* Full width for input */
+    padding: 10px; /* Inner padding */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+}
+
+button {
+    width: 100%; /* Full width for button */
+    padding: 10px; /* Inner padding */
+    background-color: #4caf50; /* Button color */
+    color: white; /* Button text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer on hover */
+    font-size: 16px; /* Font size for button */
+}
+
+button:hover {
+    background-color: #45a049; /* Button color on hover */
+}
+
+.signup {
+    margin-top: 15px; /* Top margin for signup text */
+}
+
+.signup a {
+    color: #4caf50; /* Link color */
+    text-decoration: none; /* No underline */
+}
+
+.signup a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        flex-direction: column; 
+    }
+    .sidebar {
+        width: 100%; 
+    }
+}
