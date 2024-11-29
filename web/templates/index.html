@@ -5,11 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <title>NOSIC Dashboard</title>
+
+    <!-- Script to access webcam -->
+    <script>
+        async function startWebcam() {
+            const video = document.getElementById('video-stream');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.play();
+            } catch (err) {
+                console.error("Error accessing webcam: ", err);
+            }
+        }
+
+        // Start the webcam when the page loads
+        window.onload = startWebcam;
+    </script>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo">
-            <img src="your-logo-url.png" alt="NOSIC Logo"> <!-- Ganti dengan URL logo Anda -->
+            <img src="your-logo-url.png" alt="NOSIC Logo"> <!-- Update with your logo URL -->
             <span>NOSIC</span>
         </div>
         <ul class="nav">
@@ -40,8 +57,8 @@
 
             <div class="dashboard-box" id="monitoring">
                 <h2>Monitoring</h2>
-                <p>Display monitoring data here.</p>
-                <!-- <img id="video-stream" src="http://<ESP32_IP_ADDRESS>/stream" alt="Video Stream" style="width: 100%; border-radius: 5px;"> Ganti <ESP32_IP_ADDRESS> -->
+                <p>Live feed from your webcam:</p>
+                <video id="video-stream" width="100%" style="border-radius: 5px;" autoplay></video> <!-- Video element for webcam -->
             </div>
 
             <div class="dashboard-box" id="settings">

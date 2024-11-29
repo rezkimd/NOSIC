@@ -72,3 +72,18 @@ button:hover {
 .signup a:hover {
     text-decoration: underline; /* Garis bawah saat hover */
 }
+
+.password-group {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px; /* Jarak dari kanan input */
+    top: 70%; /* Posisi vertikal dari input */
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px; /* Ukuran ikon */
+    color: #333; /* Warna ikon */
+    user-select: none; /* Mencegah pemilihan teks saat berinteraksi */
+}
