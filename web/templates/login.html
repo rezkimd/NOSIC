@@ -1,54 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='login.css') }}"
+    />
     <title>Login - NOSIC</title>
-</head>
-<body>
+  </head>
+  <body>
     <div class="login-container">
-        <div class="login-form">
-            <h2>Login to NOSIC</h2>
-            <form method="POST">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
+      <div class="login-form">
+        <h2>Login to NOSIC</h2>
+        <form method="POST">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required />
+          </div>
 
-                <div class="form-group password-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                    <span class="toggle-password" onmousedown="showPassword()" onmouseup="hidePassword()" onmouseleave="hidePassword()">
-                      <img src="{{ url_for('static', filename='assets/eye-off.svg') }}" alt="Show Password" class="icon">
-                      </span> <!-- Icon for show/hide password -->
-                </div>
+          <div class="form-group password-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+            <span
+              class="toggle-password"
+              onmousedown="showPassword()"
+              onmouseup="hidePassword()"
+              onmouseleave="hidePassword()"
+            >
+              <img
+                src="{{ url_for('static', filename='assets/eye-off.svg') }}"
+                alt="Show Password"
+                class="icon"
+              />
+            </span>
+            <!-- Icon for show/hide password -->
+          </div>
 
-                <button type="submit">Login</button>
-            </form>
-            <p class="signup">Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
-            {% with messages = get_flashed_messages() %}
-              {% if messages %}
-                <ul>
-                {% for message in messages %}
-                  <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
-              {% endif %}
-            {% endwith %}
-        </div>
+          <button type="submit">Login</button>
+        </form>
+        <p class="signup">
+          Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a>
+        </p>
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+      </div>
     </div>
+    <button type="command">Click me!!!</button>
 
     <script>
-        function showPassword() {
-            var passwordInput = document.getElementById("password");
-            passwordInput.type = "text"; // Change to text to show password
-        }
+      function showPassword() {
+        var passwordInput = document.getElementById("password");
+        passwordInput.type = "text"; // Change to text to show password
+      }
 
-        function hidePassword() {
-            var passwordInput = document.getElementById("password");
-            passwordInput.type = "password"; // Change to password to hide password
-        }
+      function hidePassword() {
+        var passwordInput = document.getElementById("password");
+        passwordInput.type = "password"; // Change to password to hide password
+      }
     </script>
-</body>
+  </body>
 </html>

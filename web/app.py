@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, date
+import Face_Function
 
 app = Flask(__name__)
 
@@ -16,6 +18,15 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+
+class UserData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.now)  # Waktu otomatis terisi
+    date = db.Column(db.Date, default=date.today)             # Tanggal otomatis terisi
+    count = db.Column(db.Integer, default=1)                  # Default count adalah 1
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Foreign key
+
+    user = db.relationship('User', backref=db.backref('data', lazy=True))
 
 # Buat database jika belum ada
 with app.app_context():
@@ -45,7 +56,16 @@ def signup():
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-
+        
+        # Menjalankan pendaftaran wajah
+        try:
+            flash("Capturing face data. Please look at the camera.", "info")
+            Face_Function.face_generator(user_id=new_user.id, user_username=new_user.username)  # Fungsi untuk menangkap gambar wajah
+            flash("Face data successfully registered!", "success")
+        except Exception as e:
+            flash(f"An error occurred while processing face data: {e}", "danger")
+            db.session.rollback()
+        
         flash('Account created successfully!', 'success')
         return redirect(url_for('login'))
 
@@ -82,6 +102,55 @@ def dashboard():
 def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
+
+# Endpoint untuk menerima data kecepatan dari web form
+@app.route('/set_speed', methods=['POST'])
+def set_speed():
+    if 'username' in session:  # Pastikan user login
+        speed = request.form.get('speed')
+        
+        if not speed.isdigit() or int(speed) < 0 or int(speed) > 255:
+            flash("Invalid speed value. Please enter a value between 0 and 255.", "danger")
+            return redirect(url_for('dashboard'))
+        
+        # Simpan data kecepatan ke database (opsional, bisa juga langsung dikirim ke ESP32)
+        db.session.execute("INSERT INTO motor_speed (speed) VALUES (:speed)", {"speed": int(speed)})
+        db.session.commit()
+
+        flash("Speed successfully updated!", "success")
+        return redirect(url_for('dashboard'))
+    else:
+        return redirect(url_for('login'))
+
+# Endpoint untuk ESP32 mengambil data kecepatan terbaru
+@app.route('/api/get_speed', methods=['GET'])
+def get_speed():
+    # Ambil nilai kecepatan terbaru dari database
+    result = db.session.execute("SELECT speed FROM motor_speed ORDER BY id DESC LIMIT 1").fetchone()
+    if result:
+        return {"speed": result['speed']}
+    else:
+        return {"error": "No speed data available"}, 404
+
+@app.route('/upload_image/<int:user_id>', methods=['POST'])
+def upload_image(user_id):
+    # Cek apakah user_id valid
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "Invalid user ID"}), 400
+    
+    # Simpan gambar
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    if file:
+        filename = secure_filename(f"face.{user_id}.{len(os.listdir(UPLOAD_FOLDER)) + 1}.jpg")
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        return jsonify({"message": "Image uploaded successfully!", "file": filename})
+    else:
+        return jsonify({"error": "Invalid file"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
