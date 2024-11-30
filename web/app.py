@@ -14,7 +14,7 @@ from flask import (
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
-from function.Face_Function import face_generator, training_data
+from function.Face_Function import face_generator
 
 
 app = Flask(__name__)
@@ -104,7 +104,7 @@ def signup():
                 user_id=new_user.id, user_username=new_user.username
             )  # Fungsi untuk menangkap gambar wajah
             flash("Face data successfully registered!", "success")
-            
+
         except Exception as e:
             flash(f"An error occurred while processing face data: {e}", "danger")
             db.session.rollback()

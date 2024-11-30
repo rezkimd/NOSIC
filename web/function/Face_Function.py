@@ -173,14 +173,89 @@ def face_generator(user_id, user_username):
                 print("Sampel gambar selesai diambil!")
                 cam.release()
                 cv2.destroyAllWindows()
-                return
+                break
 
         k = cv2.waitKey(1) & 0xFF
         if k == 27:
             break
 
     flash("Image Samples taken succefully !!!!.")
-    training_data(user_id, user_username)
+
+    try:
+        # Inisialisasi recognizer
+        recognizer = cv2.face.LBPHFaceRecognizer()
+        if recognizer.empty():
+            raise Exception(
+                "Recognizer tidak dapat dibuat. Periksa instalasi OpenCV Anda."
+            )
+
+        # Inisialisasi detektor
+        detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+        if detector.empty():
+            raise Exception("File Haar Cascade tidak ditemukan atau tidak valid.")
+
+        def Images_And_Labels(path):
+            try:
+                # Mendapatkan semua path gambar di direktori
+                imagesPaths = [os.path.join(path, f) for f in os.listdir(path)]
+                if not imagesPaths:
+                    raise FileNotFoundError(
+                        f"Tidak ada file gambar di direktori: {path}"
+                    )
+
+                faceSamples = []
+                ids = []
+
+                for imagePath in imagesPaths:
+                    gray_image = Image.open(imagePath).convert(
+                        "L"
+                    )  # Konversi ke grayscale
+                    img_arr = np.array(gray_image, "uint8")  # Membuat array
+
+                    # Deteksi wajah di gambar
+                    faces = detector.detectMultiScale(img_arr)
+                    if len(faces) == 0:
+                        print(f"Tidak ada wajah yang terdeteksi pada file: {imagePath}")
+                        continue
+
+                    # Ekstrak ID dari nama file
+                    try:
+                        id = int(os.path.split(imagePath)[-1].split(".")[1])
+                    except ValueError:
+                        print(f"ID tidak valid pada file: {imagePath}")
+                        continue
+
+                    # Menambahkan wajah dan ID ke daftar
+                    for x, y, w, h in faces:
+                        faceSamples.append(img_arr[y : y + h, x : x + w])
+                        ids.append(id)
+
+                if not faceSamples or not ids:
+                    raise Exception(
+                        "Tidak ada wajah yang valid ditemukan untuk training."
+                    )
+
+                return faceSamples, ids
+
+            except Exception as e:
+                raise Exception(f"Error saat membaca data wajah: {e}")
+
+        # Proses membaca data dan melatih model
+        print("Training Data...please wait...!!!")
+        faces, ids = Images_And_Labels(path)
+
+        recognizer.train(faces, np.array(ids))
+        recognizer.write("trained_data.yml")
+        flash("Data train success !!!!.")
+        print("Training selesai dan data disimpan sebagai 'trained_data.yml'.")
+
+    except FileNotFoundError as fnfe:
+        print(f"File atau direktori tidak ditemukan: {fnfe}")
+        flash(f"Error: {fnfe}")
+
+    except Exception as e:
+        print(f"Terjadi kesalahan: {e}")
+        flash(f"Error: {e}")
 
 
 def detection(username_name):
