@@ -9,6 +9,7 @@
 import sys
 import time
 import os
+import cv2.face
 import numpy as np
 from PIL import Image
 import cv2
@@ -128,7 +129,7 @@ def face_generator(user_id, user_username):
         print("Error: Kamera tidak dapat dibuka!")
         return
 
-    detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     if detector.empty():
         print("Error: File Haar Cascade tidak ditemukan!")
         return
