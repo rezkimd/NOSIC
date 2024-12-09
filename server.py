@@ -179,3 +179,4 @@ def update_settings():
 # Run the server on port 3000
 if __name__ == '__main__':
     app.run(port=3000)
+

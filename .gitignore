@@ -1,7 +1,7 @@
 # Avoid model uploaded
 *.dat
-instance
 haarcascade_frontalface_default.xml
+*.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

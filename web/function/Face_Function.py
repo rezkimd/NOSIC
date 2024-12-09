@@ -9,10 +9,11 @@
 import sys
 import time
 import os
+import cv2
+import cv2.data
 import cv2.face
 import numpy as np
 from PIL import Image
-import cv2
 from sqlalchemy.orm.exc import NoResultFound
 from flask import flash
 
@@ -81,7 +82,7 @@ if not os.path.exists("user_image"):
 
 def training_data(id, username):
     # used to recognize faces in images and videos
-    recognizer = cv2.face.LBPHFaceRecognizer_create()
+    recognizer = cv2.face.LBPHFaceRecognizer()
 
     # creates an instance of a face detection classifier using the Haar Cascade classifier
     # pre-trained model for detecting faces in images
@@ -184,14 +185,14 @@ def face_generator(user_id, user_username):
 
     try:
         # Inisialisasi recognizer
-        recognizer = cv2.face.LBPHFaceRecognizer()
-        if recognizer.empty():
-            raise Exception(
-                "Recognizer tidak dapat dibuat. Periksa instalasi OpenCV Anda."
-            )
+        recognizer = cv2.face.LBPHFaceRecognizer_create()
+        # if recognizer.empty():
+        #     raise Exception(
+        #         "Recognizer tidak dapat dibuat. Periksa instalasi OpenCV Anda."
+        #     )
 
         # Inisialisasi detektor
-        detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+        detector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml") 
         if detector.empty():
             raise Exception("File Haar Cascade tidak ditemukan atau tidak valid.")
 
