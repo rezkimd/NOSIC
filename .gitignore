@@ -2,6 +2,7 @@
 *.dat
 haarcascade_frontalface_default.xml
 *.yml
+test
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

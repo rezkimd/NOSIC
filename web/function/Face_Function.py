@@ -26,6 +26,7 @@ from flask import flash
 
 path = "user_image"
 name = ""
+cascadePath = "../haarcascade_frontalface_default.xml"
 if not os.path.exists("user_image"):
     os.mkdir("user_image")
 
@@ -116,7 +117,7 @@ def training_data(id, username):
     flash("Image train completed !!!!.")
 
 
-def face_generator(user_id, user_username):
+def face_generator(user_id, user_username, detector):
 
     # Folder menyimpan data wajah
     save_dir = "user_image"
@@ -129,8 +130,7 @@ def face_generator(user_id, user_username):
     if not cam.isOpened():
         print("Error: Kamera tidak dapat dibuka!")
         return
-
-    detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        
     if detector.empty():
         print("Error: File Haar Cascade tidak ditemukan!")
         return
@@ -263,7 +263,6 @@ def face_generator(user_id, user_username):
 def detection(username_name):
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     recognizer.read("trained_data.yml")  # loaded trained model
-    cascadePath = "haarcascade_frontalface_default.xml"
     faceCascade = cv2.CascadeClassifier(cascadePath)
 
     font = cv2.FONT_HERSHEY_SIMPLEX  # denotes fonts size

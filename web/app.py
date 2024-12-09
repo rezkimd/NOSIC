@@ -1,6 +1,5 @@
 import sys
 
-
 from flask import (
     Flask,
     render_template,
@@ -15,7 +14,9 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 from function.Face_Function import face_generator
-
+import requests
+import sqlite3
+import cv2
 
 app = Flask(__name__)
 
@@ -50,6 +51,27 @@ class UserData(db.Model):
 # Batas suci fungsi
 # ====================================================#
 
+def send_buzzer_alert_to_esp32():
+    """
+    Fungsi untuk mengirimkan peringatan ke ESP32 melalui HTTP POST.
+    """
+    
+    esp32_url = "http://127.0.0.1:5000/api/getAlert"
+
+    # Payload yang dikirim ke ESP32
+    payload = {
+        "alert": "Drowsiness detected",
+        "timestamp": datetime.now().isoformat(),  # Mengirimkan waktu kejadian
+    }
+
+    try:
+        # Kirim data ke ESP32
+        response = requests.post(esp32_url, json=payload, timeout=5)
+        response.raise_for_status()  # Periksa jika ada error
+        return response.status_code
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending alert to ESP32: {e}")
+        return None
 
 def read_usernames_from_db():
     try:
@@ -66,6 +88,26 @@ def read_usernames_from_db():
 # Batas suci
 # ====================================================#
 
+# Fungsi untuk mendapatkan data akun dari database
+def get_accounts():
+    conn = sqlite3.connect('instance/users.db')  # Ganti dengan nama file database Anda
+    cursor = conn.cursor()
+    cursor.execute("SELECT username FROM user")
+    accounts = cursor.fetchall()
+    conn.close()
+    return [{"username": row[0]} for row in accounts]
+
+@app.route('/accounts')
+def accounts_list():
+    accounts = get_accounts()
+    print(accounts)  # Debugging: cetak akun yang diambil dari database
+    return render_template('accounts.html', accounts=accounts)
+
+
+@app.route('/monitor/<username>')
+def monitor(username):
+    # Logika untuk mengambil data monitoring berdasarkan username
+    return render_template('monitor.html', username=username)
 
 # Buat database jika belum ada
 with app.app_context():
@@ -83,6 +125,7 @@ def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
         # Hash password untuk keamanan, hapus method='sha256'
         hashed_password = generate_password_hash(password)  # Tanpa menentukan metode
@@ -101,7 +144,7 @@ def signup():
             db.session.commit()
             flash("Capturing face data. Please look at the camera.", "info")
             face_generator(
-                user_id=new_user.id, user_username=new_user.username
+                user_id=new_user.id, user_username=new_user.username, detector=detector
             )  # Fungsi untuk menangkap gambar wajah
             flash("Face data successfully registered!", "success")
 

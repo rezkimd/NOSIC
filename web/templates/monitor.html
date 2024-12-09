@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring - {{ username }}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        video {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Monitoring Wajah untuk {{ username }}</h1>
+    <video id="video" autoplay></video>
+    <script>
+        // Mengakses webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                document.getElementById('video').srcObject = stream;
+            })
+            .catch(function(err) {
+                console.error("Error accessing webcam: " + err);
+            });
+
+        // Tambahkan logika untuk mendeteksi wajah di sini
+        // Anda bisa menggunakan library seperti face-api.js atau OpenCV.js
+    </script>
+</body>
+</html>

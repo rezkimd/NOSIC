@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='accounts.css') }}">
+    <title>Daftar Akun - NOSIC</title>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="NOSIC Logo">
+            <span>NOSIC</span>
+        </div>
+        <ul class="nav">
+            <li><a href="/accounts">
+                <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="Akun" class="icon"> Daftar Akun</a>
+            </li>
+            <li><a href="/monitoring">
+                <img src="{{ url_for('static', filename='assets/chart.svg') }}" alt="Monitoring" class="icon"> Monitoring</a>
+            </li>
+            <li><a href="/settings">
+                <img src="{{ url_for('static', filename='assets/settings.svg') }}" alt="Settings" class="icon"> Settings</a>
+            </li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Daftar Akun Terdaftar</h1>
+            <p>Berikut adalah daftar akun yang terdaftar dan status perangkat mereka.</p>
+        </header>
+
+        <div class="dashboard-sections">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Monitoring</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                    <tr>
+                        <td>{{ account.username }}</td>
+                        <td><a href="/monitor/{{ account.username }}">Lihat Monitoring</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
