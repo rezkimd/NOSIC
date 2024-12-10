@@ -65,103 +65,140 @@ def lip_distance(shape):
     distance = abs(top_mean[1] - low_mean[1])
     return distance
 
+def drowsiness_detector(video_streaming) :
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-w", "--webcam", type=int, default=0, help="index of webcam on system")
+    args = vars(ap.parse_args())
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-w", "--webcam", type=int, default=0,
-                help="index of webcam on system")
-args = vars(ap.parse_args())
+    EYE_AR_THRESH = 0.2
+    EYE_AR_CONSEC_FRAMES = 30
+    YAWN_THRESH = 30
+    alarm_status = False
+    alarm_status2 = False
+    saying = False
+    COUNTER = 0
 
-EYE_AR_THRESH = 0.3
-EYE_AR_CONSEC_FRAMES = 30
-YAWN_THRESH = 20
-alarm_status = False
-alarm_status2 = False
-saying = False
-COUNTER = 0
-
-print("-> Loading the predictor and detector...")
-#detector = dlib.get_frontal_face_detector()
-detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")    #Faster but less accurate
-predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+    print("-> Loading the predictor and detector...")
+    # detector = dlib.get_frontal_face_detector()
+    detector = cv2.CascadeClassifier(
+        "haarcascade_frontalface_default.xml"
+    )  # Faster but less accurate
+    predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 
-print("-> Starting Video Stream")
-vs = VideoStream(src=args["webcam"]).start()
-#vs= VideoStream(usePiCamera=True).start()       //For Raspberry Pi
-time.sleep(1.0)
+    print("-> Starting Video Stream")
+    vs = VideoStream(src=args["webcam"]).start()
+    # vs= VideoStream(usePiCamera=True).start()       //For Raspberry Pi
+    time.sleep(1.0)
 
-while True:
+    while video_streaming:
+        frame = vs.read()
+        frame = imutils.resize(frame, width=450)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    frame = vs.read()
-    frame = imutils.resize(frame, width=450)
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # rects = detector(gray, 0)
+        rects = detector.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=5,
+            minSize=(30, 30),
+            flags=cv2.CASCADE_SCALE_IMAGE,
+        )
 
-    #rects = detector(gray, 0)
-    rects = detector.detectMultiScale(gray, scaleFactor=1.1, 
-		minNeighbors=5, minSize=(30, 30),
-		flags=cv2.CASCADE_SCALE_IMAGE)
+        # for rect in rects:
+        for x, y, w, h in rects:
+            rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
 
-    #for rect in rects:
-    for (x, y, w, h) in rects:
-        rect = dlib.rectangle(int(x), int(y), int(x + w),int(y + h))
-        
-        shape = predictor(gray, rect)
-        shape = face_utils.shape_to_np(shape)
+            shape = predictor(gray, rect)
+            shape = face_utils.shape_to_np(shape)
 
-        eye = final_ear(shape)
-        ear = eye[0]
-        leftEye = eye [1]
-        rightEye = eye[2]
+            eye = final_ear(shape)
+            ear = eye[0]
+            leftEye = eye[1]
+            rightEye = eye[2]
 
-        distance = lip_distance(shape)
+            distance = lip_distance(shape)
 
-        leftEyeHull = cv2.convexHull(leftEye)
-        rightEyeHull = cv2.convexHull(rightEye)
-        cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
-        cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
+            leftEyeHull = cv2.convexHull(leftEye)
+            rightEyeHull = cv2.convexHull(rightEye)
+            cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
+            cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
 
-        lip = shape[48:60]
-        cv2.drawContours(frame, [lip], -1, (0, 255, 0), 1)
+            lip = shape[48:60]
+            cv2.drawContours(frame, [lip], -1, (0, 255, 0), 1)
 
-        if ear < EYE_AR_THRESH:
-            COUNTER += 1
+            if ear < EYE_AR_THRESH:
+                COUNTER += 1
 
-            if COUNTER >= EYE_AR_CONSEC_FRAMES:
-                if alarm_status == False:
-                    alarm_status = True
-                    t = Thread(target=alarm, args=('wake up sir',))
-                    t.deamon = True
-                    t.start()
+                if COUNTER >= EYE_AR_CONSEC_FRAMES:
+                    if alarm_status == False:
+                        alarm_status = True
+                        t = Thread(target=alarm, args=("wake up sir",))
+                        t.deamon = True
+                        t.start()
 
-                cv2.putText(frame, "DROWSINESS ALERT!", (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                    cv2.putText(
+                        frame,
+                        "DROWSINESS ALERT!",
+                        (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7,
+                        (0, 0, 255),
+                        2,
+                    )
 
-        else:
-            COUNTER = 0
-            alarm_status = False
+            else:
+                COUNTER = 0
+                alarm_status = False
 
-        if (distance > YAWN_THRESH):
-                cv2.putText(frame, "Yawn Alert", (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            if distance > YAWN_THRESH:
+                cv2.putText(
+                    frame,
+                    "Yawn Alert",
+                    (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.7,
+                    (0, 0, 255),
+                    2,
+                )
                 if alarm_status2 == False and saying == False:
                     alarm_status2 = True
-                    t = Thread(target=alarm, args=('take some fresh air sir',))
+                    t = Thread(target=alarm, args=("take some fresh air sir",))
                     t.deamon = True
                     t.start()
-        else:
-            alarm_status2 = False
+            else:
+                alarm_status2 = False
 
-        cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        cv2.putText(frame, "YAWN: {:.2f}".format(distance), (300, 60),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            cv2.putText(
+                frame,
+                "EAR: {:.2f}".format(ear),
+                (300, 30),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 0, 255),
+                2,
+            )
+            cv2.putText(
+                frame,
+                "YAWN: {:.2f}".format(distance),
+                (300, 60),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 0, 255),
+                2,
+            )
 
+        # cv2.imshow("Frame", frame)
+        # key = cv2.waitKey(1) & 0xFF
 
-    cv2.imshow("Frame", frame)
-    key = cv2.waitKey(1) & 0xFF
+        # if key == ord("q"):
+        #     break
 
-    if key == ord("q"):
-        break
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
 
-cv2.destroyAllWindows()
-vs.stop()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+    # cv2.destroyAllWindows()
+    vs.stop()

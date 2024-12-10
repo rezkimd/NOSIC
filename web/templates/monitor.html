@@ -3,31 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='monitor.css') }}">
     <title>Monitoring - {{ username }}</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        video {
-            width: 100%;
-            height: auto;
-            border: 1px solid #ccc;
-        }
-    </style>
-</head>
+    </head>
 <body>
-    <h1>Monitoring Wajah untuk {{ username }}</h1>
-    <video id="video" autoplay></video>
-    <script>
-        // Mengakses webcam
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                document.getElementById('video').srcObject = stream;
-            })
-            .catch(function(err) {
-                console.error("Error accessing webcam: " + err);
-            });
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="NOSIC Logo">
+            <span>NOSIC</span>
+        </div>
+        <ul class="nav">
+            <li><a href="/accounts">Daftar Akun</a></li>
+            <li><a href="/monitoring">Monitoring</a></li>
+            <li><a href="/settings">Settings</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </div>
 
-        // Tambahkan logika untuk mendeteksi wajah di sini
-        // Anda bisa menggunakan library seperti face-api.js atau OpenCV.js
-    </script>
+    <div class="main-content">
+        <header>
+            <h1>Monitoring Wajah untuk {{ username }}</h1>
+            <p>Berikut adalah feed kamera untuk mendeteksi kantuk.</p>
+        </header>
+
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" alt="Video Feed">
+        </div>
+        <script>
+            window.addEventListener('beforeunload', function() {
+                fetch('/stop_video_feed', { method: 'POST' });
+            });
+        </script>
+    </div>
 </body>
 </html>

@@ -1,0 +1,103 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 200px;  
+    background-color: #3b3b3b;  
+    color: #fff;  
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;  
+}
+
+.logo {
+    text-align: center; 
+    margin-bottom: 30px; 
+}
+
+.logo span {
+    font-size: 32px;       
+    font-weight: bold;     
+    display: block; 
+}
+
+.logo img {
+    width: 60px;  
+    height: 60px;  
+    margin-bottom: 10px;  
+}
+
+.nav {
+    list-style-type: none; 
+    padding: 0; 
+}
+
+.nav li {
+    margin: 15px 0; 
+}
+
+.nav a {
+    text-decoration: none; 
+    color: #fff;  
+    display: flex;  
+    align-items: center;  
+    transition: color 0.3s ease; 
+}
+
+.nav a:hover {
+    color: #4caf50;  
+}
+
+.main-content {
+    flex-grow: 1;  
+    padding: 20px; 
+    background-color: #f2f2f2;  
+}
+
+header {
+    background-color: #4caf50;  
+    color: white;  
+    padding: 15px; 
+    text-align: center;  
+    border-radius: 5px; 
+}
+
+h1 {
+    font-weight: normal;               
+}
+
+.video-container {
+    margin-top: 20px; 
+    text-align: center; 
+    border: 2px solid #4caf50; /* Border untuk video feed */
+    border-radius: 10px; /* Sudut melengkung */
+    overflow: hidden; /* Menghindari overflow */
+    background-color: #fff; /* Latar belakang putih */
+    padding: 10px; /* Ruang di dalam kontainer */
+}
+
+.video-container img {
+    width: 60%; /* Memastikan video mengisi lebar kontainer */
+    height: auto; /* Mempertahankan rasio aspek */
+    border-radius: 10px; /* Sudut melengkung pada gambar */
+}
+
+
+@media screen and (max-width: 768px) {
+    body {
+        flex-direction: column; 
+    }
+    .sidebar {
+        width: 100%; 
+    }
+}

@@ -2,6 +2,7 @@ import sys
 
 from flask import (
     Flask,
+    Response,
     render_template,
     request,
     redirect,
@@ -13,7 +14,8 @@ from flask import (
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
-from function.Face_Function import face_generator
+from function.face_function import face_generator
+from function.drowsiness_yawn import drowsiness_detector
 import requests
 import sqlite3
 import cv2
@@ -26,6 +28,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = "your_secret_key"  # Ganti dengan kunci rahasia yang kuat
 
 db = SQLAlchemy(app)
+
+# Variabel global untuk menyimpan status video stream
+video_streaming = True
 
 
 # Model untuk pengguna
@@ -108,6 +113,18 @@ def accounts_list():
 def monitor(username):
     # Logika untuk mengambil data monitoring berdasarkan username
     return render_template('monitor.html', username=username)
+
+
+@app.route('/video_feed')
+def video_feed():
+    global video_streaming
+    return Response(drowsiness_detector(video_streaming), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/stop_video_feed', methods=['POST'])
+def stop_video_feed():
+    global video_streaming
+    video_streaming = False
+    return '', 204  # No Content
 
 # Buat database jika belum ada
 with app.app_context():
