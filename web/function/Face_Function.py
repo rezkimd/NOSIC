@@ -6,16 +6,7 @@
     Pillow==9.5.0
 """
 
-import sys
-import time
-import os
-import cv2
-import cv2.data
-import cv2.face
-import numpy as np
-from PIL import Image
-from sqlalchemy.orm.exc import NoResultFound
-from flask import flash
+from include.imports import *
 
 # Adjust the COM port and baud rate according to your setup
 # COM_PORT = 'COM3'  # Replace with your ESP32's COM port

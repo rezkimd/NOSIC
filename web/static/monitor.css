@@ -54,6 +54,12 @@ body {
     transition: color 0.3s ease; 
 }
 
+.nav .icon {
+    width: 30px;  
+    height: 30px;  
+    margin-right: 10px;  
+}
+
 .nav a:hover {
     color: #4caf50;  
 }

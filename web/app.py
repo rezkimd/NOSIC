@@ -1,24 +1,4 @@
-import sys
-
-from flask import (
-    Flask,
-    Response,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-    session,
-    jsonify,
-)
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, date
-from function.face_function import face_generator
-from function.drowsiness_yawn import drowsiness_detector
-import requests
-import sqlite3
-import cv2
+from include.imports import *
 
 app = Flask(__name__)
 
@@ -29,8 +9,11 @@ app.secret_key = "your_secret_key"  # Ganti dengan kunci rahasia yang kuat
 
 db = SQLAlchemy(app)
 
-# Variabel global untuk menyimpan status video stream
-video_streaming = True
+# Membuat object video stream
+ap = argparse.ArgumentParser()
+ap.add_argument("-w", "--webcam", type=int, default=0, help="index of webcam on system")
+args = vars(ap.parse_args())
+vs = VideoStream(src=args["webcam"])
 
 
 # Model untuk pengguna
@@ -118,7 +101,13 @@ def monitor(username):
 @app.route('/video_feed')
 def video_feed():
     global video_streaming
-    return Response(drowsiness_detector(video_streaming), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(drowsiness_detector(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/start_video_feed', methods=['POST'])
+def start_video_feed():
+    global video_streaming
+    video_streaming = False
+    return '', 204  # No Content
 
 @app.route('/stop_video_feed', methods=['POST'])
 def stop_video_feed():

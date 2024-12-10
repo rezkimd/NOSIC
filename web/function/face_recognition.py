@@ -1,6 +1,4 @@
-import cv2
-import os
-import numpy as np
+from include.imports import *
 
 # Create a face detector
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')

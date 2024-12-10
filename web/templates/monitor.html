@@ -13,10 +13,18 @@
             <span>NOSIC</span>
         </div>
         <ul class="nav">
-            <li><a href="/accounts">Daftar Akun</a></li>
-            <li><a href="/monitoring">Monitoring</a></li>
-            <li><a href="/settings">Settings</a></li>
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            <ul class="nav">
+                <li><a href="/accounts">
+                    <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="Akun" class="icon"> Daftar Akun</a>
+                </li>
+                <li><a href="/monitoring">
+                    <img src="{{ url_for('static', filename='assets/chart.svg') }}" alt="Monitoring" class="icon"> Monitoring</a>
+                </li>
+                <li><a href="/settings">
+                    <img src="{{ url_for('static', filename='assets/settings.svg') }}" alt="Settings" class="icon"> Settings</a>
+                </li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
         </ul>
     </div>
 
