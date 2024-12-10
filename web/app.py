@@ -9,12 +9,18 @@ app.secret_key = "your_secret_key"  # Ganti dengan kunci rahasia yang kuat
 
 db = SQLAlchemy(app)
 
+#Inisiasi Model
+detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")  # Faster but less accurate
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
 # Membuat object video stream
 ap = argparse.ArgumentParser()
 ap.add_argument("-w", "--webcam", type=int, default=0, help="index of webcam on system")
 args = vars(ap.parse_args())
-vs = VideoStream(src=args["webcam"])
+# vs = VideoStream(src=args["webcam"])
 
+# Inisialisasi VideoStreamManager
+video_stream_manager = VideoStreamManager(src=0, detector=detector, predictor=predictor)
 
 # Model untuk pengguna
 class User(db.Model):
@@ -87,8 +93,13 @@ def get_accounts():
 
 @app.route('/accounts')
 def accounts_list():
-    accounts = get_accounts()
+    conn = sqlite3.connect('instance/users.db')  # Ganti dengan nama file database Anda
+    cursor = conn.cursor()
+    cursor.execute("SELECT username FROM user")
+    accounts = [{"username": row[0]} for row in cursor.fetchall()]
+    conn.close()
     print(accounts)  # Debugging: cetak akun yang diambil dari database
+
     return render_template('accounts.html', accounts=accounts)
 
 
@@ -97,23 +108,24 @@ def monitor(username):
     # Logika untuk mengambil data monitoring berdasarkan username
     return render_template('monitor.html', username=username)
 
-
-@app.route('/video_feed')
-def video_feed():
-    global video_streaming
-    return Response(drowsiness_detector(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 @app.route('/start_video_feed', methods=['POST'])
 def start_video_feed():
-    global video_streaming
-    video_streaming = False
+    if not video_stream_manager.is_running():
+        video_stream_manager.start()
+        # Mulai thread untuk drowsiness detection
+        Thread(target=video_stream_manager.drowsiness_detector, daemon=True).start()
     return '', 204  # No Content
 
 @app.route('/stop_video_feed', methods=['POST'])
 def stop_video_feed():
-    global video_streaming
-    video_streaming = False
+    video_stream_manager.stop()
     return '', 204  # No Content
+
+@app.route('/video_feed')
+def video_feed():
+    if not video_stream_manager.is_running():
+        return "Video stream is not running", 400  # Bad Request
+    return Response(start_video_feed(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # Buat database jika belum ada
 with app.app_context():
@@ -131,8 +143,7 @@ def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-
+        
         # Hash password untuk keamanan, hapus method='sha256'
         hashed_password = generate_password_hash(password)  # Tanpa menentukan metode
 

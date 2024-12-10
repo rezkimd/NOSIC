@@ -35,13 +35,40 @@
         </header>
 
         <div class="video-container">
-            <img src="{{ url_for('video_feed') }}" alt="Video Feed">
+            <img id="videoFeed" src="{{ url_for('video_feed') }}" alt="Video Feed" style="display: block;">
         </div>
-        <script>
-            window.addEventListener('beforeunload', function() {
-                fetch('/stop_video_feed', { method: 'POST' });
-            });
-        </script>
+
+        <button id="startCamera">Mulai Kamera</button>
+        <button id="stopCamera" style="display: none;">Matikan Kamera</button>
     </div>
+
+    <script>
+        document.getElementById('startCamera').addEventListener('click', function() {
+            fetch('/start_video_feed', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('videoFeed').style.display = 'block';
+                        this.style.display = 'none';
+                        document.getElementById('stopCamera').style.display = 'inline';
+                    }
+                });
+        });
+
+        document.getElementById('stopCamera').addEventListener('click', function() {
+            fetch('/stop_video_feed', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('videoFeed').style.display = 'none';
+                        this.style.display = 'none';
+                        document.getElementById('startCamera').style.display = 'inline';
+                    }
+                });
+        });
+
+        // Menangani aksi saat berpindah halaman
+        window.addEventListener('beforeunload', function() {
+            fetch('/stop_video_feed', { method: 'POST' });
+        });
+    </script>
 </body>
 </html>
