@@ -9,9 +9,11 @@
 <body>
     <div class="sidebar">
         <div class="logo">
-            <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="NOSIC Logo">
-            <span>NOSIC</span>
-        </div>
+            <a href="/dashboard" class="logo-link">
+                <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="NOSIC Logo">
+            <!-- Update with your logo URL -->
+            <span class="logo-text">NOSIC</span>
+          </div>
         <ul class="nav">
             <li><a href="/accounts">
                 <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="Akun" class="icon"> Daftar Akun</a>

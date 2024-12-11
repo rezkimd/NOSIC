@@ -9,8 +9,10 @@ app.secret_key = "your_secret_key"  # Ganti dengan kunci rahasia yang kuat
 
 db = SQLAlchemy(app)
 
-#Inisiasi Model
-detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")  # Faster but less accurate
+# Inisiasi Model
+detector = cv2.CascadeClassifier(
+    "haarcascade_frontalface_default.xml"
+)  # Faster but less accurate
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # Membuat object video stream
@@ -21,6 +23,7 @@ args = vars(ap.parse_args())
 
 # Inisialisasi VideoStreamManager
 video_stream_manager = VideoStreamManager(src=0, detector=detector, predictor=predictor)
+
 
 # Model untuk pengguna
 class User(db.Model):
@@ -45,27 +48,29 @@ class UserData(db.Model):
 # Batas suci fungsi
 # ====================================================#
 
-def send_buzzer_alert_to_esp32():
-    """
-    Fungsi untuk mengirimkan peringatan ke ESP32 melalui HTTP POST.
-    """
-    
-    esp32_url = "http://127.0.0.1:5000/api/getAlert"
 
-    # Payload yang dikirim ke ESP32
-    payload = {
-        "alert": "Drowsiness detected",
-        "timestamp": datetime.now().isoformat(),  # Mengirimkan waktu kejadian
-    }
+@app.route("/speed/<int:speed>", methods=["POST", "GET"])
+def set_speed(speed):
+    """
+    Endpoint untuk mengatur nilai kecepatan motor.
+    """
+    global current_speed
+    current_speed = speed  # Set nilai kecepatan
+    return (
+        jsonify({"status": "success", "message": f"Speed updated to {current_speed}"}),
+        200,
+    )
 
-    try:
-        # Kirim data ke ESP32
-        response = requests.post(esp32_url, json=payload, timeout=5)
-        response.raise_for_status()  # Periksa jika ada error
-        return response.status_code
-    except requests.exceptions.RequestException as e:
-        print(f"Error sending alert to ESP32: {e}")
-        return None
+
+@app.route("/api/getAlert", methods=["GET"])
+def get_alert():
+    """
+    Endpoint untuk mengambil nilai speed dan alert.
+    """
+    alert_message = "Speed dikurangi" if current_speed > 150 else "Speed normal"
+    response_data = {"speed": current_speed, "alert": alert_message}
+    return jsonify(response_data), 200
+
 
 def read_usernames_from_db():
     try:
@@ -82,50 +87,63 @@ def read_usernames_from_db():
 # Batas suci
 # ====================================================#
 
+
 # Fungsi untuk mendapatkan data akun dari database
 def get_accounts():
-    conn = sqlite3.connect('instance/users.db')  # Ganti dengan nama file database Anda
+    conn = sqlite3.connect("instance/users.db")  # Ganti dengan nama file database Anda
     cursor = conn.cursor()
     cursor.execute("SELECT username FROM user")
     accounts = cursor.fetchall()
     conn.close()
     return [{"username": row[0]} for row in accounts]
 
-@app.route('/accounts')
+
+@app.route("/accounts")
 def accounts_list():
-    conn = sqlite3.connect('instance/users.db')  # Ganti dengan nama file database Anda
+    conn = sqlite3.connect("instance/users.db")  # Ganti dengan nama file database Anda
     cursor = conn.cursor()
     cursor.execute("SELECT username FROM user")
     accounts = [{"username": row[0]} for row in cursor.fetchall()]
     conn.close()
     print(accounts)  # Debugging: cetak akun yang diambil dari database
 
-    return render_template('accounts.html', accounts=accounts)
+    return render_template("accounts.html", accounts=accounts)
 
 
-@app.route('/monitor/<username>')
-def monitor(username):
+
+@app.route("/monitor")
+def monitor():
+    username = session.get('username')  # Ambil username dari session
+    if not username:
+        # Jika pengguna tidak login, arahkan ke halaman login
+        return redirect(url_for('login'))
     # Logika untuk mengambil data monitoring berdasarkan username
-    return render_template('monitor.html', username=username)
+    return render_template("monitor.html", username=username)
 
-@app.route('/start_video_feed', methods=['POST'])
+
+@app.route("/start_video_feed", methods=["POST"])
 def start_video_feed():
     if not video_stream_manager.is_running():
         video_stream_manager.start()
         # Mulai thread untuk drowsiness detection
         Thread(target=video_stream_manager.drowsiness_detector, daemon=True).start()
-    return '', 204  # No Content
+    return "", 204  # No Content
 
-@app.route('/stop_video_feed', methods=['POST'])
+
+@app.route("/stop_video_feed", methods=["POST"])
 def stop_video_feed():
     video_stream_manager.stop()
-    return '', 204  # No Content
+    return "", 204  # No Content
 
-@app.route('/video_feed')
+
+@app.route("/video_feed")
 def video_feed():
     if not video_stream_manager.is_running():
         return "Video stream is not running", 400  # Bad Request
-    return Response(start_video_feed(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(
+        start_video_feed(), mimetype="multipart/x-mixed-replace; boundary=frame"
+    )
+
 
 # Buat database jika belum ada
 with app.app_context():
@@ -143,7 +161,7 @@ def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        
+
         # Hash password untuk keamanan, hapus method='sha256'
         hashed_password = generate_password_hash(password)  # Tanpa menentukan metode
 
@@ -183,6 +201,7 @@ def login():
         password = request.form["password"]
 
         user = User.query.filter_by(username=username).first()
+        session['username'] = username
 
         # Validasi kredensial (ganti dengan logika autentikasi yang sesuai)
         if (username == "admin" and password == "password") or (
@@ -204,35 +223,34 @@ def dashboard():
     return redirect(url_for("login"))
 
 
-# Halaman Logout
-@app.route("/logout")
+@app.route('/logout')
 def logout():
-    session.pop("username", None)
-    return redirect(url_for("login"))
+    session.pop('username', None)  # Hapus username dari session
+    return redirect(url_for('login'))
 
 
-# Endpoint untuk menerima data kecepatan dari web form
-@app.route("/set_speed", methods=["POST"])
-def set_speed():
-    if "username" in session:  # Pastikan user login
-        speed = request.form.get("speed")
+# # Endpoint untuk menerima data kecepatan dari web form
+# @app.route("/set_speed", methods=["POST"])
+# def set_speed():
+#     if "username" in session:  # Pastikan user login
+#         speed = request.form.get("speed")
 
-        if not speed.isdigit() or int(speed) < 0 or int(speed) > 255:
-            flash(
-                "Invalid speed value. Please enter a value between 0 and 255.", "danger"
-            )
-            return redirect(url_for("dashboard"))
+#         if not speed.isdigit() or int(speed) < 0 or int(speed) > 255:
+#             flash(
+#                 "Invalid speed value. Please enter a value between 0 and 255.", "danger"
+#             )
+#             return redirect(url_for("dashboard"))
 
-        # Simpan data kecepatan ke database (opsional, bisa juga langsung dikirim ke ESP32)
-        db.session.execute(
-            "INSERT INTO motor_speed (speed) VALUES (:speed)", {"speed": int(speed)}
-        )
-        db.session.commit()
+#         # Simpan data kecepatan ke database (opsional, bisa juga langsung dikirim ke ESP32)
+#         db.session.execute(
+#             "INSERT INTO motor_speed (speed) VALUES (:speed)", {"speed": int(speed)}
+#         )
+#         db.session.commit()
 
-        flash("Speed successfully updated!", "success")
-        return redirect(url_for("dashboard"))
-    else:
-        return redirect(url_for("login"))
+#         flash("Speed successfully updated!", "success")
+#         return redirect(url_for("dashboard"))
+#     else:
+#         return redirect(url_for("login"))
 
 
 # Endpoint untuk ESP32 mengambil data kecepatan terbaru

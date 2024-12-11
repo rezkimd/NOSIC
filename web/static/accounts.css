@@ -121,6 +121,21 @@ th {
     margin-top: 0;                     
 }
 
+/* Mengatur tampilan elemen a agar tidak terlihat seperti link */
+.logo-link {
+    text-decoration: none; /* Hilangkan garis bawah */
+    color: inherit; /* Warna mengikuti elemen induk */
+    display: flex; /* Atur agar logo dan teks sejajar secara horizontal */
+    align-items: center; /* Vertikal tengah */
+  }
+  
+  /* Tambahkan gaya untuk teks logo */
+  .logo-text {
+    font-size: 1.5em; /* Atur ukuran teks */
+    font-weight: bold; /* Teks tebal */
+    margin-left: 8px; /* Jarak antara gambar dan teks */
+  }
+
 @media screen and (max-width: 768px) {
     body {
         flex-direction: column; 

@@ -1,71 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='index.css') }}"
+    />
     <title>NOSIC Dashboard</title>
 
     <!-- Script to access webcam -->
     <script>
-        async function startWebcam() {
-            const video = document.getElementById('video-stream');
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                video.play();
-            } catch (err) {
-                console.error("Error accessing webcam: ", err);
-            }
+      async function startWebcam() {
+        const video = document.getElementById("video-stream");
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          video.srcObject = stream;
+          video.play();
+        } catch (err) {
+          console.error("Error accessing webcam: ", err);
         }
+      }
 
-        // Start the webcam when the page loads
-        window.onload = startWebcam;
+      // Start the webcam when the page loads
+      window.onload = startWebcam;
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <div class="sidebar">
-        <div class="logo">
-            <img src="your-logo-url.png" alt="NOSIC Logo"> <!-- Update with your logo URL -->
-            <span>NOSIC</span>
-        </div>
-        <ul class="nav">
-            <li><a href="#profile">
-                <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="Profile" class="icon"> Profile</a>
-            </li>
-            <li><a href="#monitoring">
-                <img src="{{ url_for('static', filename='assets/chart.svg') }}" alt="Monitoring" class="icon"> Monitoring</a>
-            </li>
-            <li><a href="#settings">
-                <img src="{{ url_for('static', filename='assets/settings.svg') }}" alt="Settings" class="icon"> Settings</a>
-            </li>
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
-        </ul>
+      <div class="logo">
+        <a href="/dashboard" class="logo-link">
+            <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="NOSIC Logo">
+        <!-- Update with your logo URL -->
+        <span class="logo-text">NOSIC</span>
+      </div>
+      <ul class="nav">
+        <li>
+          <a href="/accounts">
+            <img
+              src="{{ url_for('static', filename='assets/profile.svg') }}"
+              alt="Profile"
+              class="icon"
+            />
+            Profile</a
+          >
+        </li>
+        <li>
+          <a href="/monitoring">
+            <img
+              src="{{ url_for('static', filename='assets/chart.svg') }}"
+              alt="Monitoring"
+              class="icon"
+            />
+            Monitoring</a
+          >
+        </li>
+        <li>
+          <a href="#settings">
+            <img
+              src="{{ url_for('static', filename='assets/settings.svg') }}"
+              alt="Settings"
+              class="icon"
+            />
+            Settings</a
+          >
+        </li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      </ul>
     </div>
 
     <div class="main-content">
-        <header>
-            <h1>Dashboard</h1>
-            <p>Welcome to the NOSIC Dashboard</p>
-        </header>
+      <header>
+        <h1>Dashboard</h1>
+        <p>Welcome to the NOSIC Dashboard</p>
+      </header>
 
-        <div class="dashboard-sections">
-            <div class="dashboard-box" id="profile">
-                <h2>Profile</h2>
-                <p>Display user profile data here.</p>
-            </div>
-
-            <div class="dashboard-box" id="monitoring">
-                <h2>Monitoring</h2>
-                <p>Live feed from your webcam:</p>
-                <video id="video-stream" width="100%" style="border-radius: 5px;" autoplay></video> <!-- Video element for webcam -->
-            </div>
-
-            <div class="dashboard-box" id="settings">
-                <h2>Settings</h2>
-                <p>Configure your settings here.</p>
-            </div>
+      <div class="dashboard-sections">
+        <div class="dashboard-box" id="profile">
+          <h2>Profile</h2>
+          <p>Display user profile data here.</p>
         </div>
+
+        <div class="dashboard-box" id="monitoring">
+          <h2>Monitoring</h2>
+          <p>Live feed from your webcam:</p>
+          <video
+            id="video-stream"
+            width="100%"
+            style="border-radius: 5px"
+            autoplay
+          ></video>
+          <!-- Video element for webcam -->
+        </div>
+
+        <div class="dashboard-box" id="settings">
+          <h2>Settings</h2>
+          <p>Configure your settings here.</p>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

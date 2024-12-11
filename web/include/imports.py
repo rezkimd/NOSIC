@@ -60,5 +60,5 @@ import sqlite3                # Berinteraksi dengan database SQLite
 from sqlalchemy.orm.exc import NoResultFound  # Exception handling untuk query SQLAlchemy
 
 # Application-Specific Modules
-from function.face_function import face_generator  # Fungsi khusus untuk face generation
+from function.Face_Function import face_generator  # Fungsi khusus untuk face generation
 from function.drowsiness_yawn import VideoStreamManager # Fungsi untuk deteksi kantuk/menguap
