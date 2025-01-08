@@ -19,7 +19,7 @@
                 <li><a href="/accounts">
                     <img src="{{ url_for('static', filename='assets/profile.svg') }}" alt="Akun" class="icon"> Daftar Akun</a>
                 </li>
-                <li><a href="/monitoring">
+                <li><a href="/monitor">
                     <img src="{{ url_for('static', filename='assets/chart.svg') }}" alt="Monitoring" class="icon"> Monitoring</a>
                 </li>
                 <li><a href="/settings">
@@ -40,13 +40,12 @@
             <img id="videoFeed" src="{{ url_for('video_feed') }}" alt="Video Feed" style="display: block;">
         </div>
 
-        <button id="startCamera">Mulai Kamera</button>
-        <button id="stopCamera" style="display: none;">Matikan Kamera</button>
+        <button id="stopCamera">Matikan Kamera</button>
     </div>
 
     <script>
         document.getElementById('startCamera').addEventListener('click', function() {
-            fetch('/start_video_feed', { method: 'POST' })
+            fetch('/video_feed', { method: 'POST' })
                 .then(response => {
                     if (response.ok) {
                         document.getElementById('videoFeed').style.display = 'block';
@@ -57,7 +56,7 @@
         });
 
         document.getElementById('stopCamera').addEventListener('click', function() {
-            fetch('/stop_video_feed', { method: 'POST' })
+            fetch('/stop_drowsiness', { method: 'POST' })
                 .then(response => {
                     if (response.ok) {
                         document.getElementById('videoFeed').style.display = 'none';

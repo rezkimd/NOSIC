@@ -61,4 +61,4 @@ from sqlalchemy.orm.exc import NoResultFound  # Exception handling untuk query S
 
 # Application-Specific Modules
 from function.Face_Function import face_generator  # Fungsi khusus untuk face generation
-from function.drowsiness_yawn import VideoStreamManager # Fungsi untuk deteksi kantuk/menguap
+from function.drowsiness_yawn import stop_camera, drowsiness_detector # Fungsi untuk deteksi kantuk/menguap

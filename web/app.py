@@ -1,5 +1,7 @@
 from include.imports import *
 
+global current_speed
+
 app = Flask(__name__)
 
 # Konfigurasi database
@@ -22,7 +24,8 @@ args = vars(ap.parse_args())
 # vs = VideoStream(src=args["webcam"])
 
 # Inisialisasi VideoStreamManager
-video_stream_manager = VideoStreamManager(src=0, detector=detector, predictor=predictor)
+# video_stream_manager = VideoStreamManager(src=0, detector=detector, predictor=predictor)
+
 
 
 # Model untuk pengguna
@@ -48,7 +51,6 @@ class UserData(db.Model):
 # Batas suci fungsi
 # ====================================================#
 
-
 @app.route("/speed/<int:speed>", methods=["POST", "GET"])
 def set_speed(speed):
     """
@@ -67,6 +69,7 @@ def get_alert():
     """
     Endpoint untuk mengambil nilai speed dan alert.
     """
+    global current_speed
     alert_message = "Speed dikurangi" if current_speed > 150 else "Speed normal"
     response_data = {"speed": current_speed, "alert": alert_message}
     return jsonify(response_data), 200
@@ -121,28 +124,26 @@ def monitor():
     return render_template("monitor.html", username=username)
 
 
-@app.route("/start_video_feed", methods=["POST"])
-def start_video_feed():
-    if not video_stream_manager.is_running():
-        video_stream_manager.start()
-        # Mulai thread untuk drowsiness detection
-        Thread(target=video_stream_manager.drowsiness_detector, daemon=True).start()
-    return "", 204  # No Content
+# @app.route("/start_video_feed", methods=["POST"])
+# def start_video_feed():
+#     if not video_stream_manager.is_running():
+#         video_stream_manager.start()
+#         # Mulai thread untuk drowsiness detection
+#     return Thread(target=video_stream_manager.drowsiness_detector, daemon=True).start(), 204  # No Content
 
 
-@app.route("/stop_video_feed", methods=["POST"])
-def stop_video_feed():
-    video_stream_manager.stop()
-    return "", 204  # No Content
+# @app.route("/stop_video_feed", methods=["POST"])
+# def stop_video_feed():
+#     video_stream_manager.stop()
+#     return "", 204  # No Content
 
 
 @app.route("/video_feed")
 def video_feed():
-    if not video_stream_manager.is_running():
-        return "Video stream is not running", 400  # Bad Request
-    return Response(
-        start_video_feed(), mimetype="multipart/x-mixed-replace; boundary=frame"
-    )
+    # if not video_stream_manager.is_running():
+    #     return "Video stream is not running", 400  # Bad Request
+    return Response(drowsiness_detector(detector=detector,
+                                        predictor=predictor), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Buat database jika belum ada
@@ -228,6 +229,11 @@ def logout():
     session.pop('username', None)  # Hapus username dari session
     return redirect(url_for('login'))
 
+@app.route('/stop_drowsiness', methods=['POST'])
+def stop_drowsiness():
+    stop_camera()
+    return jsonify({"status": "Drowsiness detection stopped"}), 200
+
 
 # # Endpoint untuk menerima data kecepatan dari web form
 # @app.route("/set_speed", methods=["POST"])
@@ -287,4 +293,4 @@ def get_speed():
 #         return jsonify({"error": "Invalid file"}), 400
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=5000,debug=True)
